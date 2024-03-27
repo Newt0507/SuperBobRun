@@ -6,11 +6,9 @@ using UnityEngine;
 
 public class Snail : Enemy
 {
-    [SerializeField] private Sprite _shellSprite;
-    [SerializeField] private float _dragForce;
+    [SerializeField] private Transform _shell;
 
     private int _direction;
-    private bool isShell;
 
     private void Start()
     {
@@ -20,8 +18,7 @@ public class Snail : Enemy
 
     public override void Move()
     {
-        if(!isShell)
-            _rigid.velocity = new Vector2(_direction * _moveSpeed * Time.deltaTime, _rigid.velocity.y);
+        _rigid.velocity = new Vector2(_direction * _moveSpeed * Time.deltaTime, _rigid.velocity.y);
     }
 
     private void Flip()
@@ -38,23 +35,10 @@ public class Snail : Enemy
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Player") && isShell)
-        {
-            Vector2 direction = (transform.position - other.gameObject.transform.position).normalized;
-            _rigid.AddForce(direction * _dragForce, ForceMode2D.Impulse);
-            Destroy(gameObject, 1.5f);
-        }
-    }
-
     public override void BeingHit()
     {
-        isShell = true;
-        _direction = 0;
-        _anim.enabled = false;
-        _spriteRenderer.sprite = _shellSprite;
-        gameObject.layer = LayerMask.NameToLayer("Shell");
+        Instantiate(_shell, transform.position, Quaternion.identity);
+        Destroy(gameObject);
+        
     }
-
 }

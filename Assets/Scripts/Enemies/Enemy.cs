@@ -21,6 +21,11 @@ public class Enemy : MonoBehaviour
         enabled = false;
     }
 
+    private void Update()
+    {
+        Attack();
+    }
+
     private void FixedUpdate()
     {
         Move();
@@ -35,10 +40,11 @@ public class Enemy : MonoBehaviour
     {
         //Debug.LogError("Enemy.BeingHit();");
     }
-    // public virtual void Attack()
-    // {
-    //     
-    // }
+    
+    public virtual void Attack()
+    {
+        //Debug.LogError("Enemy.Attack();");
+    }
 
     public int GetDamageAmount()
     {

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4832733581911484284}
   - component: {fileID: 6665225835025323928}
   - component: {fileID: 983090255906271534}
-  - component: {fileID: 3220803939997603335}
+  - component: {fileID: -6191628243386047259}
   - component: {fileID: 5056221983169593200}
   - component: {fileID: 8363814036291338342}
   m_Layer: 0
@@ -109,7 +109,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!61 &3220803939997603335
+--- !u!61 &-6191628243386047259
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,7 +141,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.016665623, y: -0.106354535}
+  m_Offset: {x: 0, y: -0.12110466}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -152,7 +152,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.6691185, y: 0.7294365}
+  m_Size: {x: 0.69536567, y: 0.7577907}
   m_EdgeRadius: 0
 --- !u!50 &5056221983169593200
 Rigidbody2D:
@@ -194,10 +194,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _health: 3
-  _damageAmount: 5
   _moveSpeed: 250
   _jumpForce: 15
   _groundLayer:
     serializedVersion: 2
     m_Bits: 256
   _bounceForce: 7
+  _bomb: {fileID: 3830613958239345004, guid: 53d45e8180f93884d80433004f98010e, type: 3}
+  _firedForce: 15

@@ -7,28 +7,26 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    public static Player Instance { get; private set; }
-    
     private const string IS_RUNNING = "IsRunning";
     private const string JUMP = "Jump";
-    private const string FALL = "Fall";
-    private const string HIT = "Hit";
+    private const string IS_FALLING = "IsFalling";
+    private const string IS_BEING_HIT = "IsBeingHit";
 
     [Header("Health Properties")]
     [SerializeField] private int _health;
-    [SerializeField] private float _damageAmount;
     
     [Space]
     [Header("Move Properties")]
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _jumpForce;
     [SerializeField] private LayerMask _groundLayer;
-    //[SerializeField] private Vector3 _offset;
     [SerializeField] private float _bounceForce;
 
     [Space]
-    [Header("Move Properties")]
-    [SerializeField] private Transform _bullet;
+    [Header("Attack Properties")]
+    [SerializeField] private Transform _bomb;
+    [SerializeField] private float _firedForce;
+
     
     private PlayerControls _playerControls;
     private Rigidbody2D _rigid;
@@ -37,22 +35,12 @@ public class Player : MonoBehaviour
     
     private float _direction;
     private bool _isGrounded;
-    private bool _previousFlip;
+    private float _previousDirection = 1f;
+    private bool _isFalling;
     private bool _isBeingHit;
-    
     
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        
         _playerControls = new PlayerControls();
         _rigid = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
@@ -65,8 +53,8 @@ public class Player : MonoBehaviour
 
         _playerControls.Player.Move.performed += ctx => { _direction = ctx.ReadValue<float>(); };
         _playerControls.Player.Jump.performed += ctx => Jump();
+        _playerControls.Player.Fired.performed += ctx => Fire();
 
-        _previousFlip = _spriteRenderer.flipX;
     }
 
     private void Update()
@@ -82,13 +70,17 @@ public class Player : MonoBehaviour
 
     private void Move()
     {
-        float interactDistance = .5f;
-         _isGrounded = Physics2D.Raycast(transform.position,
-             Vector2.down, interactDistance, _groundLayer);
-        
-        //float interactRadius = .5f;
-        //_isGrounded = Physics2D.OverlapCircle(transform.position + _offset, interactRadius, _groundLayer);
+        float jumpDistance = .55f;
+        _isGrounded = Physics2D.BoxCast(transform.position, transform.lossyScale / 2, 0,
+              Vector2.down, jumpDistance, _groundLayer);
 
+         float moveDistance = .15f;
+         if (Physics2D.BoxCast(transform.position, transform.lossyScale / 2, 0,
+                 new Vector2(_direction, 0), moveDistance, _groundLayer))
+         {
+             _direction = 0;
+         }
+         
         if (!_isBeingHit)
         {
             _rigid.velocity = new Vector2(_direction * _moveSpeed * Time.deltaTime, _rigid.velocity.y);
@@ -97,15 +89,32 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Flip()
+    private void OnDrawGizmos()
     {
-        if (_direction == 0f)
-            _spriteRenderer.flipX = _previousFlip;
+        float maxDistance = .15f;
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position, transform.lossyScale / 2, 0,
+                                 Vector2.right, maxDistance, _groundLayer) ;
+        if (hit)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(transform.position, transform.forward * hit.distance);
+            Gizmos.DrawWireCube(transform.position + transform.forward * hit.distance, transform.lossyScale);
+        }
         else
         {
-            _spriteRenderer.flipX = _direction < 0;
-            _previousFlip = _spriteRenderer.flipX;
+            Gizmos.color = Color.green;
+            Gizmos.DrawRay(transform.position, transform.forward * maxDistance);
         }
+        
+        
+    }
+
+    private void Flip()
+    {
+        if (_previousDirection != _direction && _direction != 0f)
+            _previousDirection = _direction;
+        
+        _spriteRenderer.flipX = _previousDirection < 0;
     }
     
     private void Jump()
@@ -117,21 +126,42 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void Fire()
+    {
+        Transform spell = Instantiate(_bomb, transform);
+        spell.GetComponent<Rigidbody2D>().AddForce(Vector2.right * _previousDirection * _firedForce, ForceMode2D.Impulse);
+    }
+
+    
     private void Fall()
     {
-        if(!_isGrounded && _rigid.velocity.y < 0)
-            _anim.SetTrigger(FALL);
+        if (_isGrounded)
+            _isFalling = false;
+        else if (_rigid.velocity.y < 0)
+            _isFalling = true;
+
+        _anim.SetBool(IS_FALLING, _isFalling);
+    }
+
+    private bool DotTest(Transform target, Vector2 testVector, float amount)
+    {
+        Vector2 direction = (target.position - transform.position).normalized;
+        return Vector2.Dot(direction.normalized, testVector) > amount;
     }
 
     private bool CanAttack(Transform target)
     {
-        Vector2 direction = (target.position - transform.position).normalized;
-        return Vector2.Dot(direction.normalized, Vector2.down) > 0.5f;
+        return DotTest(target, Vector2.down, 0.5f);
+    }
+
+    public bool HitBlock(Transform block)
+    {
+        return DotTest(block, Vector2.up, 0f);
     }
 
     public void TakeDamage(Transform attackerTransform , int damageAmount)
     {
-        _anim.SetTrigger(HIT);
+        _anim.SetTrigger(IS_BEING_HIT);
         _health -= damageAmount;
 
         Vector2 bounceDirection = (transform.position - attackerTransform.position).normalized;
@@ -143,7 +173,6 @@ public class Player : MonoBehaviour
             _rigid.gravityScale += Time.deltaTime;
             Destroy(gameObject, 2f);
         }
-        
     }
     
     private void OnCollisionEnter2D(Collision2D other)
@@ -167,8 +196,18 @@ public class Player : MonoBehaviour
         }
     }
 
-    public int GetPlayerHealth()
+    public int GetHealth()
     {
         return _health;
+    }
+    
+    private void OnBecameInvisible()
+    {
+        enabled = false;
+    }
+
+    private void OnDisable()
+    {
+        Destroy(gameObject);
     }
 }
