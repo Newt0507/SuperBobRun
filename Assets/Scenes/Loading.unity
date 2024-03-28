@@ -281,7 +281,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 2538710101d0f1f4e8976b3495cd1f75, type: 3}
+  m_Texture: {fileID: 2800000, guid: 4d8c75a4d7dd2a0489270e1058d82128, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -416,7 +416,7 @@ GameObject:
   - component: {fileID: 507506985}
   - component: {fileID: 507506986}
   m_Layer: 5
-  m_Name: Slider
+  m_Name: ProgressSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -492,7 +492,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.744
+  m_Value: 0.7
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -541,7 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _slider: {fileID: 507506986}
-  _txtProgress: {fileID: 0}
+  _txtProgress: {fileID: 1881015059}
 --- !u!1 &713949620
 GameObject:
   m_ObjectHideFlags: 0

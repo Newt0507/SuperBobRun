@@ -10,8 +10,11 @@ public class Bomb : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
-            enemy.BeingHit();
-            Destroy(gameObject);
+            if (enemy != null)
+            {
+                enemy.BeingHit();
+                Destroy(gameObject);
+            }
         }
 
         Destroy(gameObject, 1f);

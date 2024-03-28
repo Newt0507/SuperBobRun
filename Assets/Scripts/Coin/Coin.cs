@@ -16,7 +16,7 @@ public class Coin : MonoBehaviour
         Vector2 aminatingPosition = restingPosition + Vector2.up * 2f;
 
         yield return Move(restingPosition, aminatingPosition);
-        yield return Move(aminatingPosition, restingPosition);
+        //yield return Move(aminatingPosition, restingPosition);
         
         Destroy(gameObject);
     }

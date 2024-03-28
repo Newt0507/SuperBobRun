@@ -7,7 +7,7 @@ public class CameraFollow : MonoBehaviour
 {
     private Transform _player;
 
-    private void Awake()
+    private void Start()
     {
         _player = GameObject.FindWithTag("Player").transform;
     }

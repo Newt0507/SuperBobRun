@@ -7,13 +7,17 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    //public static Player Instance { get; private set; }
+    
+    public static event EventHandler OnHealthChanged;
+    
     private const string IS_RUNNING = "IsRunning";
     private const string JUMP = "Jump";
     private const string IS_FALLING = "IsFalling";
     private const string IS_BEING_HIT = "IsBeingHit";
 
     [Header("Health Properties")]
-    [SerializeField] private int _health;
+    [SerializeField] private int _maxHealth;
     
     [Space]
     [Header("Move Properties")]
@@ -32,7 +36,8 @@ public class Player : MonoBehaviour
     private Rigidbody2D _rigid;
     private Animator _anim;
     private SpriteRenderer _spriteRenderer;
-    
+
+    private int _health = -1;
     private float _direction;
     private bool _isGrounded;
     private float _previousDirection = 1f;
@@ -41,10 +46,23 @@ public class Player : MonoBehaviour
     
     private void Awake()
     {
+        // if (Instance == null)
+        // {
+        //     Instance = this;
+        //     DontDestroyOnLoad(gameObject);
+        // }
+        // else
+        // {
+        //     Destroy(gameObject);
+        // }
+        
         _playerControls = new PlayerControls();
         _rigid = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        _health = _maxHealth;
+        OnHealthChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void Start()
@@ -55,6 +73,7 @@ public class Player : MonoBehaviour
         _playerControls.Player.Jump.performed += ctx => Jump();
         _playerControls.Player.Fired.performed += ctx => Fire();
 
+        
     }
 
     private void Update()
@@ -163,6 +182,7 @@ public class Player : MonoBehaviour
     {
         _anim.SetTrigger(IS_BEING_HIT);
         _health -= damageAmount;
+        OnHealthChanged?.Invoke(this, EventArgs.Empty);
 
         Vector2 bounceDirection = (transform.position - attackerTransform.position).normalized;
         _rigid.velocity = new Vector2(bounceDirection.x * _bounceForce, _bounceForce);
@@ -171,7 +191,8 @@ public class Player : MonoBehaviour
         {
             GetComponent<Collider2D>().enabled = false;
             _rigid.gravityScale += Time.deltaTime;
-            Destroy(gameObject, 2f);
+
+            GameManager.Instance._isGameOver = true;
         }
     }
     
@@ -190,6 +211,10 @@ public class Player : MonoBehaviour
                 TakeDamage(enemy.transform, enemy.GetDamageAmount());
             }
         }
+        // else if (other.gameObject.layer == LayerMask.NameToLayer("Trap"))
+        // {
+        //     TakeDamage(transform, _health);
+        // }
         else
         {
             _isBeingHit = false;
@@ -201,13 +226,22 @@ public class Player : MonoBehaviour
         return _health;
     }
     
+    public int GetMaxHealth()
+    {
+        return _maxHealth;
+    }
+    
     private void OnBecameInvisible()
     {
+        OnHealthChanged = null;
+        GameManager.Instance._isGameOver = true;
         enabled = false;
     }
 
     private void OnDisable()
     {
+        //Instance = null;
+        _playerControls.Disable();
         Destroy(gameObject);
     }
 }

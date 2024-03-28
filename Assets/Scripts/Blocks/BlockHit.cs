@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Random = UnityEngine.Random;
 
 public class BlockHit : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class BlockHit : MonoBehaviour
         {
             _spriteRenderer.sprite = _emptyBlockSprite;
         }
-
+        
         if (_coin != null)
             Instantiate(_coin, transform);
         
