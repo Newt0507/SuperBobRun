@@ -200,5 +200,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   _bounceForce: 7
+  _coinValueToFire: 1
   _bomb: {fileID: 3830613958239345004, guid: 53d45e8180f93884d80433004f98010e, type: 3}
   _firedForce: 15

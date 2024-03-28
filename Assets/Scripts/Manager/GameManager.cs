@@ -8,6 +8,8 @@ using UnityEngine.Serialization;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    private const string COIN = "Coin";
     
     [HideInInspector] public bool _isVictory = false;
     [HideInInspector] public bool _isGameOver = false;
@@ -18,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _playingTimerMax;
     
     private float _playingTimer;
+    private int _coin;
     
     private void Awake()
     {
@@ -29,6 +32,9 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        _coin = PlayerPrefs.GetInt(COIN);
+
     }
 
     private void Start()
@@ -66,5 +72,30 @@ public class GameManager : MonoBehaviour
         OnGameOverChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    public int GetCoin()
+    {
+        return _coin;
+    }
+        
+    public void SetCoin(int coinValue)
+    {
+        _coin += coinValue;
+
+        if (_coin <= 0)
+            _coin = 0;
+
+        PlayerPrefs.SetInt(COIN, _coin);
+        PlayerPrefs.Save();
+    }
+    
+    public int GetRemainTimer()
+    {
+        return (int)_playingTimer;
+    }
+
+    public float GetPlayingTimer()
+    {
+        return _playingTimer / _playingTimerMax;
+    }
 
 }

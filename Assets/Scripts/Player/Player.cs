@@ -28,6 +28,7 @@ public class Player : MonoBehaviour
 
     [Space]
     [Header("Attack Properties")]
+    [SerializeField] private int _coinValueToFire;
     [SerializeField] private Transform _bomb;
     [SerializeField] private float _firedForce;
 
@@ -147,8 +148,13 @@ public class Player : MonoBehaviour
 
     private void Fire()
     {
-        Transform spell = Instantiate(_bomb, transform);
-        spell.GetComponent<Rigidbody2D>().AddForce(Vector2.right * _previousDirection * _firedForce, ForceMode2D.Impulse);
+        if (GameManager.Instance.GetCoin() >= _coinValueToFire)
+        {
+            Transform spell = Instantiate(_bomb, transform);
+            spell.GetComponent<Rigidbody2D>().AddForce(Vector2.right * _previousDirection * _firedForce, ForceMode2D.Impulse);
+
+            GameManager.Instance.SetCoin(-_coinValueToFire);
+        }        
     }
 
     
@@ -231,6 +237,11 @@ public class Player : MonoBehaviour
         return _maxHealth;
     }
     
+    public int GetCostFireValue()
+    {
+        return _coinValueToFire;
+    }
+
     private void OnBecameInvisible()
     {
         OnHealthChanged = null;

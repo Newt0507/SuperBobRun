@@ -40,9 +40,7 @@ public class BlockHit : MonoBehaviour
         
         _maxHit--;
         if (_maxHit == 0)
-        {
             _spriteRenderer.sprite = _emptyBlockSprite;
-        }
         
         if (_coin != null)
             Instantiate(_coin, transform);
