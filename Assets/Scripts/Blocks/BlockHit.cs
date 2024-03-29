@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
@@ -13,7 +14,10 @@ public class BlockHit : MonoBehaviour
     [SerializeField] private bool _canBreak;
 
     private Animator _anim;
+    private Player _player;
     private SpriteRenderer _spriteRenderer;
+
+    private bool _isHit;
     
     private void Awake()
     {
@@ -22,28 +26,57 @@ public class BlockHit : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    private void Start()
+    {
+        _player = GameObject.FindWithTag("Player").GetComponent<Player>();
+    }
+
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (_maxHit != 0 && other.gameObject.CompareTag("Player"))
         {
             Player player = other.gameObject.GetComponent<Player>();
+            _spriteRenderer.enabled = true;
+
             if (player.HitBlock(transform))
             {
+                _isHit = true;
                 Hit();
             }
         }
     }
 
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (_canBreak && _isHit && other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            Enemy enemy = other.gameObject.GetComponent<Enemy>();
+            enemy.BeingHit(transform);
+        }
+    }
+
     private void Hit()
     {
-        _spriteRenderer.enabled = true;
-        
         _maxHit--;
         if (_maxHit == 0)
             _spriteRenderer.sprite = _emptyBlockSprite;
-        
+
         if (_coin != null)
-            Instantiate(_coin, transform);
+        {
+            int random = Random.Range(0, 5);
+
+            switch (random)
+            {
+                case 0 or 1:
+                    _player.SetHealth(_player.GetHealth());
+                    break;
+                case 2 or 3:
+                    Instantiate(_coin, transform);
+                    break;
+                case 4:
+                    break;
+            }
+        }
         
         StartCoroutine(Aminate());
 

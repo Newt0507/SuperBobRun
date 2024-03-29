@@ -9,7 +9,7 @@ public class Bullet : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             Player player = other.gameObject.GetComponent<Player>();
-            player.TakeDamage(transform, 1);
+            player.TakeDamage(transform, damageAmount: 1);
             Destroy(gameObject);
         }
 

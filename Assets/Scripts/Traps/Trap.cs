@@ -9,8 +9,7 @@ public class Trap : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            int damageAmount = 1;
-            other.gameObject.GetComponent<Player>().TakeDamage(transform, damageAmount);
+            other.gameObject.GetComponent<Player>().TakeDamage(transform, damageAmount: 1);
         }
     }
 }

@@ -12,7 +12,7 @@ public class Bomb : MonoBehaviour
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.BeingHit();
+                enemy.BeingHit(transform);
                 Destroy(gameObject);
             }
         }

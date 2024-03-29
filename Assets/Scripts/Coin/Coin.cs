@@ -7,7 +7,7 @@ public class Coin : MonoBehaviour
 {
     private void Start()
     {
-        int coinValue = 1;
+        int coinValue = 50;
         GameManager.Instance.SetCoin(coinValue);
 
         StartCoroutine(Aminate());

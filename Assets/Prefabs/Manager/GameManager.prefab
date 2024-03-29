@@ -46,4 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isVictory: 0
   _isGameOver: 0
-  _playingTimerMax: 100
+  _playingTimerMax: 60

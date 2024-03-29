@@ -36,7 +36,7 @@ public class Enemy : MonoBehaviour
         //Debug.LogError("Enemy.Move();");
     }
 
-    public virtual void BeingHit()
+    public virtual void BeingHit(Transform from)
     {
         //Debug.LogError("Enemy.BeingHit();");
     }

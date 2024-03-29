@@ -11,7 +11,7 @@ public class FireButtonUI : MonoBehaviour
 
     private void Start()
     {
-        _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        _player = GameObject.FindWithTag("Player").GetComponent<Player>();
 
         if (_player != null)
             _timerText.text = _player.GetCostFireValue().ToString("N0");

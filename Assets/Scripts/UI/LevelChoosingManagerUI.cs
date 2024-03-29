@@ -5,8 +5,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
-public class LevelManagerUI : MonoBehaviour
+public class LevelChoosingManagerUI : MonoBehaviour
 {
     [SerializeField] private int _levelSceneNumber;
     [SerializeField] private Button _levelButton;
@@ -18,6 +19,8 @@ public class LevelManagerUI : MonoBehaviour
         for (int i = 0; i < _levelSceneNumber; i++)
         {
             Button button = Instantiate(_levelButton, transform);
+            button.GetComponent<Image>().color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+            
             TextMeshProUGUI levelNumber = button.GetComponentInChildren<TextMeshProUGUI>();
             levelNumber.text = $"{i + 1}";
 

@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     public static event EventHandler OnHealthChanged;
     
     private const string IS_RUNNING = "IsRunning";
-    private const string JUMP = "Jump";
+    private const string IS_JUMPING = "IsJumping";
     private const string IS_FALLING = "IsFalling";
     private const string IS_BEING_HIT = "IsBeingHit";
 
@@ -42,8 +42,10 @@ public class Player : MonoBehaviour
     private float _direction;
     private bool _isGrounded;
     private float _previousDirection = 1f;
+    private bool _isJumping;
     private bool _isFalling;
     private bool _isBeingHit;
+    private bool _isAttacking;
     
     private void Awake()
     {
@@ -80,7 +82,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         Flip();
-        Fall();
+        JumpAndFallAnimation();
     }
 
     private void FixedUpdate()
@@ -142,13 +144,13 @@ public class Player : MonoBehaviour
         if (_isGrounded)
         {
             _rigid.velocity = new Vector2(_rigid.velocity.x, _jumpForce);
-            _anim.SetTrigger(JUMP);
+            _isJumping = true;
         }
     }
 
     private void Fire()
     {
-        if (GameManager.Instance.GetCoin() >= _coinValueToFire)
+        if (GameManager.Instance.GetCoin() >= _coinValueToFire && _health > 0)
         {
             Transform spell = Instantiate(_bomb, transform);
             spell.GetComponent<Rigidbody2D>().AddForce(Vector2.right * _previousDirection * _firedForce, ForceMode2D.Impulse);
@@ -158,13 +160,19 @@ public class Player : MonoBehaviour
     }
 
     
-    private void Fall()
+    private void JumpAndFallAnimation()
     {
         if (_isGrounded)
             _isFalling = false;
-        else if (_rigid.velocity.y < 0)
-            _isFalling = true;
+        else
+        {
+            _isJumping = false;
+            if (_rigid.velocity.y < 0)
+                _isFalling = true;
+        }
+        
 
+        _anim.SetBool(IS_JUMPING, _isJumping);
         _anim.SetBool(IS_FALLING, _isFalling);
     }
 
@@ -176,6 +184,7 @@ public class Player : MonoBehaviour
 
     private bool CanAttack(Transform target)
     {
+        _isAttacking = true;
         return DotTest(target, Vector2.down, 0.5f);
     }
 
@@ -190,8 +199,7 @@ public class Player : MonoBehaviour
         _health -= damageAmount;
         OnHealthChanged?.Invoke(this, EventArgs.Empty);
 
-        Vector2 bounceDirection = (transform.position - attackerTransform.position).normalized;
-        _rigid.velocity = new Vector2(bounceDirection.x * _bounceForce, _bounceForce);
+        Bounce(attackerTransform);
         
         if (_health <= 0)
         {
@@ -201,26 +209,34 @@ public class Player : MonoBehaviour
             GameManager.Instance._isGameOver = true;
         }
     }
+
+    private void Bounce(Transform fromTransform)
+    {
+        Vector2 bounceDirection = (transform.position - fromTransform.position).normalized;
+        _rigid.velocity = new Vector2(bounceDirection.x * _bounceForce, _bounceForce);
+    }
     
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
-            if (CanAttack(enemy.transform))
+            
+            if(enemy != null)
             {
-                enemy.BeingHit();
-            }
-            else
-            {
-                _isBeingHit = true;
-                TakeDamage(enemy.transform, enemy.GetDamageAmount());
+                if (CanAttack(enemy.transform))
+                {
+                    enemy.BeingHit(transform);
+                    Bounce(enemy.transform);
+                    _isAttacking = false;
+                }
+                else
+                {
+                    _isBeingHit = true;
+                    TakeDamage(enemy.transform, enemy.GetDamageAmount());
+                }
             }
         }
-        // else if (other.gameObject.layer == LayerMask.NameToLayer("Trap"))
-        // {
-        //     TakeDamage(transform, _health);
-        // }
         else
         {
             _isBeingHit = false;
@@ -231,10 +247,25 @@ public class Player : MonoBehaviour
     {
         return _health;
     }
+
+    public void SetHealth(int healthValue)
+    {
+        _health += healthValue;
+        
+        if (_health >= _maxHealth)
+            _health = _maxHealth;
+
+        OnHealthChanged?.Invoke(this, EventArgs.Empty);
+    }
     
     public int GetMaxHealth()
     {
         return _maxHealth;
+    }
+
+    public bool GetAttackState()
+    {
+        return _isAttacking;
     }
     
     public int GetCostFireValue()

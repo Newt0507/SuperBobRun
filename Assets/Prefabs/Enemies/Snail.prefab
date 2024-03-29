@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1934218459246576939, guid: 420d48d245e7431468af8f73884aa105, type: 3}
       propertyPath: m_Size.x
-      value: 0.8452606
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1934218459246576939, guid: 420d48d245e7431468af8f73884aa105, type: 3}
       propertyPath: m_Size.y
-      value: 0.5740074
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1934218459246576939, guid: 420d48d245e7431468af8f73884aa105, type: 3}
       propertyPath: m_Offset.x
-      value: 0.048182085
+      value: 0.09
       objectReference: {fileID: 0}
     - target: {fileID: 1934218459246576939, guid: 420d48d245e7431468af8f73884aa105, type: 3}
       propertyPath: m_Offset.y
@@ -128,3 +128,7 @@ MonoBehaviour:
   _moveSpeed: 30
   _damageAmount: 1
   _shell: {fileID: 8005652054141056371, guid: 7c244f0033351724f8cae7613284717c, type: 3}
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  _deathSprite: {fileID: -8837823990603146419, guid: b1ba59a5e0321eb459d8717bf09639dd, type: 3}

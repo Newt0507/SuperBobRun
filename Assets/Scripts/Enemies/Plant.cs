@@ -73,7 +73,7 @@ public class Plant : Enemy
         }
     }
     
-    public override void BeingHit()
+    public override void BeingHit(Transform transform)
     {
         _isBeingHit = true;
         _anim.enabled = false;

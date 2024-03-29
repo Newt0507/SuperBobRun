@@ -45,8 +45,12 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         _playingTimer -= Time.deltaTime;
-        if (_playingTimer < 0)
+        if (_playingTimer <= 0)
+        {
             _isGameOver = true;
+            _playingTimer = 0f;
+        }
+            
         
         
         if (_isVictory)

@@ -13,6 +13,7 @@ public class StatusUI : MonoBehaviour
     [SerializeField] private Button _nextLevelButton;
     [SerializeField] private Button _replayButton;
     [SerializeField] private Button _homeButton;
+    [SerializeField] private GameObject _congratsUI;
 
     private void Awake()
     {
@@ -25,13 +26,15 @@ public class StatusUI : MonoBehaviour
         _nextLevelButton.onClick.AddListener(() =>
         {
             Scene currentScene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene($"{int.Parse(currentScene.name) + 1}");
+            if (int.Parse(currentScene.name) < 10)
+                SceneManager.LoadScene($"{int.Parse(currentScene.name) + 1}");
         });
         
         _replayButton.onClick.AddListener(() =>
         {
             Scene currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.name);
+            
         });
         
         _homeButton.onClick.AddListener(() =>
@@ -40,6 +43,7 @@ public class StatusUI : MonoBehaviour
         });
 
         _nextLevelButton.gameObject.SetActive(false);
+        _congratsUI.SetActive(false);
        
     }
 
@@ -64,6 +68,9 @@ public class StatusUI : MonoBehaviour
         _statusText.text = "VICTORY";
         _nextLevelButton.gameObject.SetActive(true);
         _resumeButton.gameObject.SetActive(false);
+        if (int.Parse(SceneManager.GetActiveScene().name) == 10)
+            _congratsUI.SetActive(true);
+        
         Show();
     }
 
