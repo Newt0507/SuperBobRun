@@ -19579,6 +19579,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 827404508}
     m_Modifications:
+    - target: {fileID: -7493141711640752035, guid: c552bd110c6b5e8409e7e4fe736f8720, type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 8264326154302416242, guid: 8cc1c84e872995f45b2d7965236ef4da, type: 3}
     - target: {fileID: 3675758141062935256, guid: c552bd110c6b5e8409e7e4fe736f8720, type: 3}
       propertyPath: m_Name
       value: Start

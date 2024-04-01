@@ -58,6 +58,11 @@ public class Shell : MonoBehaviour
             {
                 gameObject.layer = LayerMask.NameToLayer("Shell");
                 _direction = (transform.position - other.transform.position).normalized.x;
+                
+                if (_direction < 0)
+                    _direction = -1;
+                else if (_direction > 0)
+                    _direction = 1;
             }
             else
             {

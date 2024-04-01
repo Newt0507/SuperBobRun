@@ -237,7 +237,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aab8857093598444ebdf70d1d8d63c3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _coin: {fileID: 2288391932870373828, guid: 15b3c823f6e6fd84bbd1fe03926cfe03, type: 3}
+  _coin: {fileID: 160287649162855801, guid: ba507649f819dea48bbef0cb4afc9746, type: 3}
+  _heart: {fileID: 6843491775591319636, guid: 34e86098964c285438fa0d1ba77b41a9, type: 3}
   _maxHit: 1
   _emptyBlockSprite: {fileID: 21300000, guid: 0638681e2b056ac4fb683bd78596fbef, type: 3}
   _canBreak: 0

@@ -171,6 +171,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfc291fc88749f84eb6e115a573c04c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 750
-  _timeGetBackToSnail: 10
+  _moveSpeed: 500
+  _timeGetBackToSnail: 3
   _snail: {fileID: 2269002569312138320, guid: 3db42cad96e98b44cb628904019647b2, type: 3}

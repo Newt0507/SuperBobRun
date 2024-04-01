@@ -9,26 +9,21 @@ using Random = UnityEngine.Random;
 public class BlockHit : MonoBehaviour
 {
     [SerializeField] private Transform _coin;
+    [SerializeField] private Transform _heart;
     [SerializeField] private int _maxHit = -1;
     [SerializeField] private Sprite _emptyBlockSprite;
     [SerializeField] private bool _canBreak;
 
     private Animator _anim;
-    private Player _player;
     private SpriteRenderer _spriteRenderer;
 
-    private bool _isHit;
+    private bool _isHitting;
     
     private void Awake()
     {
         _anim = GetComponent<Animator>();
         _anim.enabled = false;
         _spriteRenderer = GetComponent<SpriteRenderer>();
-    }
-
-    private void Start()
-    {
-        _player = GameObject.FindWithTag("Player").GetComponent<Player>();
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -40,7 +35,7 @@ public class BlockHit : MonoBehaviour
 
             if (player.HitBlock(transform))
             {
-                _isHit = true;
+                _isHitting = true;
                 Hit();
             }
         }
@@ -48,11 +43,17 @@ public class BlockHit : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (_canBreak && _isHit && other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (_isHitting && other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
             enemy.BeingHit(transform);
         }
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+            _isHitting = false;
     }
 
     private void Hit()
@@ -61,14 +62,14 @@ public class BlockHit : MonoBehaviour
         if (_maxHit == 0)
             _spriteRenderer.sprite = _emptyBlockSprite;
 
-        if (_coin != null)
+        if (_coin != null && _heart != null)
         {
             int random = Random.Range(0, 5);
 
             switch (random)
             {
                 case 0 or 1:
-                    _player.SetHealth(_player.GetHealth());
+                    Instantiate(_heart, transform);
                     break;
                 case 2 or 3:
                     Instantiate(_coin, transform);

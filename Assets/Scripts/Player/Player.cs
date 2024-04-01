@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -75,7 +76,6 @@ public class Player : MonoBehaviour
         _playerControls.Player.Move.performed += ctx => { _direction = ctx.ReadValue<float>(); };
         _playerControls.Player.Jump.performed += ctx => Jump();
         _playerControls.Player.Fired.performed += ctx => Fire();
-
         
     }
 
@@ -176,7 +176,7 @@ public class Player : MonoBehaviour
         _anim.SetBool(IS_FALLING, _isFalling);
     }
 
-    private bool DotTest(Transform target, Vector2 testVector, float amount)
+    private bool DotTest(Transform target, Vector2 testVector, float amount = 0.5f)
     {
         Vector2 direction = (target.position - transform.position).normalized;
         return Vector2.Dot(direction.normalized, testVector) > amount;
@@ -185,12 +185,12 @@ public class Player : MonoBehaviour
     private bool CanAttack(Transform target)
     {
         _isAttacking = true;
-        return DotTest(target, Vector2.down, 0.5f);
+        return DotTest(target, Vector2.down);
     }
 
     public bool HitBlock(Transform block)
     {
-        return DotTest(block, Vector2.up, 0f);
+        return DotTest(block, Vector2.up);
     }
 
     public void TakeDamage(Transform attackerTransform , int damageAmount)
@@ -210,9 +210,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Bounce(Transform fromTransform)
+    private void Bounce(Transform from)
     {
-        Vector2 bounceDirection = (transform.position - fromTransform.position).normalized;
+        Vector2 bounceDirection = (transform.position - from.position).normalized;
         _rigid.velocity = new Vector2(bounceDirection.x * _bounceForce, _bounceForce);
     }
     
@@ -240,6 +240,15 @@ public class Player : MonoBehaviour
         else
         {
             _isBeingHit = false;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (!_isGrounded && other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            if(_playerControls.Player.Move.IsPressed())
+                _direction = _previousDirection;
         }
     }
 
