@@ -33,12 +33,3 @@ public class LevelChoosingManagerUI : MonoBehaviour
         }
     }
 }
-
-
-
-[Serializable]
-public class CountryData
-{
-    public Vector3 position;
-    public 
-}
