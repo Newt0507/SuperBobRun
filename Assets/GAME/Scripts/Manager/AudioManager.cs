@@ -20,12 +20,14 @@ public class AudioManager : MonoBehaviour
         }
 
         Instance = this;
+        DontDestroyOnLoad(gameObject);
 
-        _musicSource.mute = Data.IsSoundMuted();
-        _sfxSource.mute = Data.IsSoundMuted();
+        _musicSource.volume = Data.GetMusicVolume();
+        _sfxSource.volume = Data.GetSFXVolume();
         _isVibrationMuted = Data.IsVibrationMuted();
     }
 
+    #region Music
     public void PlayMusic(ESound sound)
     {
         foreach (var musicSound in _musicSounds.soundList)
@@ -39,6 +41,24 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void StopMusic()
+    {
+        _musicSource.Stop();
+    }
+
+    public float GetMusicVolume()
+    {
+        return _musicSource.volume;
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        _musicSource.volume = volume;
+        Data.SetMusicVolume(volume);
+    }
+    #endregion
+
+    #region SFX
     public void PlaySFX(ESound sound)
     {
         foreach (var sfxSound in _sfxSounds.soundList)
@@ -50,24 +70,28 @@ public class AudioManager : MonoBehaviour
             }
         }
     }
+    public float GetSFXVolume()
+    {
+        return _sfxSource.volume;
+    }
 
+    public void SetSFXVolume(float volume)
+    {
+        _sfxSource.volume = volume;
+        Data.SetSFXVolume(volume);
+    }
+
+    #endregion
+
+    #region Vibration
     public void PlayVibration()
     {
         if (_isVibrationMuted) Handheld.Vibrate();
-    }
+    }    
 
-    public void StopMusic()
+    public bool IsVibrationMuted()
     {
-        _musicSource.Stop();
-    }
-
-    public void ToggleSound()
-    {
-        var mute = !_musicSource.mute;
-
-        _musicSource.mute = mute;
-        _sfxSource.mute = mute;
-        Data.SetSound(mute);
+        return _isVibrationMuted;
     }
 
     public void ToggleVibration()
@@ -75,4 +99,8 @@ public class AudioManager : MonoBehaviour
         _isVibrationMuted = !_isVibrationMuted;
         Data.SetVibration(_isVibrationMuted);
     }
+    #endregion
+
+    
+
 }

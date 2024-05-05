@@ -5,9 +5,11 @@ using UnityEngine;
 public static class Data
 {
     private const string COIN = "Coin";
-    private const string SOUND = "Sound";
+    private const string MUSIC_VOLUME = "Music_Volume";
+    private const string SFX_VOLUME = "SFX_Volume";
     private const string VIBRATION = "Vibration";
 
+    #region Coin
     public static int GetCoin()
     {
         return PlayerPrefs.GetInt(COIN, 0);
@@ -25,15 +27,28 @@ public static class Data
         PlayerPrefs.SetInt(COIN, _coin);
         PlayerPrefs.Save();
     }
+    #endregion
 
-    public static bool IsSoundMuted()
+    #region Settings
+    public static float GetMusicVolume()
     {
-        return PlayerPrefs.GetInt(SOUND, 0) != 0;
+        return PlayerPrefs.GetFloat(MUSIC_VOLUME, 1);
     }
 
-    public static void SetSound(bool mute)
+    public static void SetMusicVolume(float volume)
     {
-        PlayerPrefs.SetInt(SOUND, mute ? 1 : 0);
+        PlayerPrefs.SetFloat(MUSIC_VOLUME, volume);
+        PlayerPrefs.Save();
+    }
+
+    public static float GetSFXVolume()
+    {
+        return PlayerPrefs.GetFloat(SFX_VOLUME, 1);
+    }
+
+    public static void SetSFXVolume(float volume)
+    {
+        PlayerPrefs.SetFloat(SFX_VOLUME, volume);
         PlayerPrefs.Save();
     }
 
@@ -47,4 +62,6 @@ public static class Data
         PlayerPrefs.SetInt(VIBRATION, mute ? 1 : 0);
         PlayerPrefs.Save();
     }
+    #endregion
+
 }
