@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,43 +9,92 @@ using UnityEngine.UI;
 
 public class StatusUI : MonoBehaviour
 {
+    [Header("Status Text")]
     [SerializeField] private TextMeshProUGUI _statusText;
+
+    [Header("Button")]
     [SerializeField] private Button _resumeButton;
     [SerializeField] private Button _nextLevelButton;
     [SerializeField] private Button _replayButton;
-    [SerializeField] private Button _homeButton;
-    [SerializeField] private GameObject _congratsUI;
+    [SerializeField] private Button _settingsButton;
+    //[SerializeField] private Button[] _homeButton;
+
+    [Header("Panel")]
+    [SerializeField] private RectTransform _statusPanel;
+    [SerializeField] private RectTransform _congratsUI;
+
+    private const int PANEL_ANCHORED_POSITION_Y = 1000;
+
+    private float _duration = 1f;
+    private bool _firstEnable = true;
 
     private void Awake()
     {
         _resumeButton.onClick.AddListener(() =>
         {
-            Time.timeScale = 1;
-            gameObject.SetActive(false);
-        });
+            AudioManager.Instance.PlaySFX(ESound.Click);
+            _statusPanel.DOAnchorPosY(PANEL_ANCHORED_POSITION_Y, _duration / 2).SetEase(Ease.InBack).SetUpdate(true)
+                .OnComplete(() => gameObject.SetActive(false));
+       });
         
         _nextLevelButton.onClick.AddListener(() =>
         {
-            Scene currentScene = SceneManager.GetActiveScene();
-            if (int.Parse(currentScene.name) < 10)
-                SceneManager.LoadScene($"{int.Parse(currentScene.name) + 1}");
+            AudioManager.Instance.PlaySFX(ESound.Click);
+            if (int.TryParse(SceneManager.GetActiveScene().name, out int currentScene))
+            {
+                if (currentScene < 10)
+                {
+                    //ObjectPoolManager.Instance.ReturnAllPool();
+                    UIManager.Instance.FadeImageUI(() => SceneManager.LoadScene($"{currentScene + 1}"));
+                }
+            }
         });
         
         _replayButton.onClick.AddListener(() =>
         {
-            Scene currentScene = SceneManager.GetActiveScene();
-            SceneManager.LoadScene(currentScene.name);
-            
-        });
-        
-        _homeButton.onClick.AddListener(() =>
-        {
-            SceneManager.LoadScene("MainMenu");
+            AudioManager.Instance.PlaySFX(ESound.Click);
+            string currentScene = SceneManager.GetActiveScene().name;
+            AudioManager.Instance.StopMusic();
+            UIManager.Instance.FadeImageUI(() => SceneManager.LoadScene(currentScene));
+            //ObjectPoolManager.Instance.ReturnAllPool();
+            //SceneManager.LoadScene(currentScene.name);
         });
 
+        _settingsButton.onClick.AddListener(() =>
+        {
+            AudioManager.Instance.PlaySFX(ESound.Click);
+            UIManager.Instance.GetGameSettingsUI().Show();
+        });
+
+        //_homeButton.onClick.AddListener(() =>
+        //{
+        //    AudioManager.Instance.PlaySFX(ESound.Click);
+        //    AudioManager.Instance.StopMusic();
+        //    UIManager.Instance.FadeImageUI(() =>
+        //    {
+        //        UIManager.Instance.GetMainMenuContainer().gameObject.SetActive(true);
+        //        AudioManager.Instance.PlayMusic(ESound.MainMenu);
+        //        //ObjectPoolManager.Instance.ReturnAllPool();
+        //        SceneManager.LoadScene("MainMenu");
+        //    });
+        //});
+
         _nextLevelButton.gameObject.SetActive(false);
-        _congratsUI.SetActive(false);
-       
+
+        SetUp();
+    }
+
+    public void HomeOnClick()
+    {
+        AudioManager.Instance.PlaySFX(ESound.Click);
+        AudioManager.Instance.StopMusic();
+        UIManager.Instance.FadeImageUI(() =>
+        {
+            UIManager.Instance.GetMainMenuContainer().gameObject.SetActive(true);
+            AudioManager.Instance.PlayMusic(ESound.MainMenu);
+            //ObjectPoolManager.Instance.ReturnAllPool();
+            SceneManager.LoadScene("MainMenu");
+        });
     }
 
     private void Start()
@@ -69,7 +119,7 @@ public class StatusUI : MonoBehaviour
         _nextLevelButton.gameObject.SetActive(true);
         _resumeButton.gameObject.SetActive(false);
         if (int.Parse(SceneManager.GetActiveScene().name) == 10)
-            _congratsUI.SetActive(true);
+            _congratsUI.DOAnchorPosY(0, _duration).SetEase(Ease.OutBack).SetUpdate(true); //_congratsUI.gameObject.SetActive(true);
         
         Show();
     }
@@ -87,11 +137,24 @@ public class StatusUI : MonoBehaviour
     private void OnEnable()
     {
         Time.timeScale = 0;
+
+        if(_firstEnable)
+        {
+            _firstEnable = false;
+            return;
+        }
+
+        _statusPanel.DOAnchorPosY(0, _duration).SetEase(Ease.OutBack).SetUpdate(true);
     }
-    
+
     private void OnDisable()
     {
         Time.timeScale = 1;
     }
-    
+
+    private void SetUp()
+    {
+        _statusPanel.anchoredPosition = new Vector2(0, PANEL_ANCHORED_POSITION_Y);
+        _congratsUI.anchoredPosition = new Vector2(0, PANEL_ANCHORED_POSITION_Y);
+    }
 }

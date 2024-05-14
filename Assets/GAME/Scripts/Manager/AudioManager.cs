@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,23 +23,33 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        _musicSource.volume = Data.GetMusicVolume();
+        _musicSource.volume = Data.GetMusicVolume();        
         _sfxSource.volume = Data.GetSFXVolume();
         _isVibrationMuted = Data.IsVibrationMuted();
+    }
+
+    private void Start()
+    {
+        PlayMusic(ESound.MainMenu);
     }
 
     #region Music
     public void PlayMusic(ESound sound)
     {
+        bool soundFound = false;
         foreach (var musicSound in _musicSounds.soundList)
         {
             if (sound == musicSound.sound)
             {
+                soundFound = true;
                 _musicSource.clip = musicSound.clip;
                 _musicSource.Play();
                 break;
             }
         }
+
+        if (!soundFound)
+            Debug.LogError("Sound " + sound + "does not found!");
     }
 
     public void StopMusic()
@@ -61,15 +72,21 @@ public class AudioManager : MonoBehaviour
     #region SFX
     public void PlaySFX(ESound sound)
     {
+        bool soundFound = false;
         foreach (var sfxSound in _sfxSounds.soundList)
         {
             if (sound == sfxSound.sound)
             {
+                soundFound = true;
                 _sfxSource.PlayOneShot(sfxSound.clip);
                 break;
             }
         }
+
+        if (!soundFound)
+            Debug.LogError("Sound " + sound + "does not found!");
     }
+
     public float GetSFXVolume()
     {
         return _sfxSource.volume;

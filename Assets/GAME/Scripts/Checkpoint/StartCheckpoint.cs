@@ -5,10 +5,21 @@ using UnityEngine;
 
 public class StartCheckpoint : MonoBehaviour
 {
-    [SerializeField] private Transform _player;
+    [SerializeField] private GameObject[] _characters;
 
     private void Awake()
     {
-        Instantiate(_player, Vector2.up * 3, Quaternion.identity);
+        foreach (var character in _characters)
+        {
+            if (character.GetHashCode() == Data.GetCharacter())
+            {
+                Instantiate(character, Vector2.up * 3, Quaternion.identity);
+                Time.timeScale = 0;
+                break;
+            }            
+        }
+
+
+        UIManager.Instance.FadeImageUI(() => Time.timeScale = 1);
     }
 }

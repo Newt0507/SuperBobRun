@@ -14,6 +14,7 @@ public class PauseButtonUI : MonoBehaviour
     {
         _pauseButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX(ESound.Click);
             _statusUI.SetActive(true);
         });
     }

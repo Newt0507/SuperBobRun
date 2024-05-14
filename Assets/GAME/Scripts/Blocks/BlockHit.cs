@@ -8,11 +8,12 @@ using Random = UnityEngine.Random;
 
 public class BlockHit : MonoBehaviour
 {
-    [SerializeField] private Transform _coin;
-    [SerializeField] private Transform _heart;
+    //[SerializeField] private Transform _coin;
+    //[SerializeField] private Transform _heart;
     [SerializeField] private int _maxHit = -1;
     [SerializeField] private Sprite _emptyBlockSprite;
     [SerializeField] private bool _canBreak;
+    [SerializeField] private bool _isMisteryBlock;
 
     private Animator _anim;
     private SpriteRenderer _spriteRenderer;
@@ -62,17 +63,21 @@ public class BlockHit : MonoBehaviour
         if (_maxHit == 0)
             _spriteRenderer.sprite = _emptyBlockSprite;
 
-        if (_coin != null && _heart != null)
+        if (_isMisteryBlock)
         {
             int random = Random.Range(0, 5);
 
             switch (random)
             {
                 case 0 or 1:
-                    Instantiate(_heart, transform);
+                    AudioManager.Instance.PlaySFX(ESound.Health);
+                    ObjectPoolManager.Instance.Get("Heart", transform);
+                    //Instantiate(_heart, transform);
                     break;
                 case 2 or 3:
-                    Instantiate(_coin, transform);
+                    AudioManager.Instance.PlaySFX(ESound.Coin);
+                    ObjectPoolManager.Instance.Get("Coin", transform);
+                    //Instantiate(_coin, transform);
                     break;
                 case 4:
                     break;

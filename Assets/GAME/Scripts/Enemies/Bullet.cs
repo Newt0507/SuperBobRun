@@ -10,9 +10,13 @@ public class Bullet : MonoBehaviour
         {
             Player player = other.gameObject.GetComponent<Player>();
             player.TakeDamage(transform, damageAmount: 1);
-            Destroy(gameObject);
-        }
 
-        Destroy(gameObject, .2f);
+            ObjectPoolManager.Instance.Return(gameObject);
+        }
+    }
+
+    private void OnBecameInvisible()
+    {
+        ObjectPoolManager.Instance.Return(gameObject);
     }
 }

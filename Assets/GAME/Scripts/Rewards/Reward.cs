@@ -12,7 +12,8 @@ public abstract class Reward : MonoBehaviour
         yield return Move(restingPosition, aminatingPosition);
         //yield return Move(aminatingPosition, restingPosition);
 
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        ObjectPoolManager.Instance.Return(gameObject);
     }
 
     private IEnumerator Move(Vector2 fromPosition, Vector2 toPosition)

@@ -5,16 +5,17 @@ using UnityEngine;
 
 public class Heart : Reward
 {
-    private Player _player;
-
-    private void Awake()
+    private bool _isFirstEnable = true;
+    private void OnEnable()
     {
-        _player = GameObject.FindWithTag("Player").GetComponent<Player>();
-    }
+        if (_isFirstEnable)
+        {
+            _isFirstEnable = false;
+            return;
+        }
 
-    private void Start()
-    {
         StartCoroutine(Aminate());
-        _player.SetHealth(_player.GetHealth());
+        var player = GameObject.FindWithTag("Player").GetComponent<Player>();
+        player.SetHealth(player.GetHealth());
     }
 }

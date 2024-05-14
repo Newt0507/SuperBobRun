@@ -21,7 +21,7 @@ public class HealthManagerUI : MonoBehaviour
     private void Start()
     {
         _player = GameObject.FindWithTag("Player").GetComponent<Player>();
-        Player.OnHealthChanged += Player_OnHealthChanged;
+        Player.Instance.OnHealthChanged += Player_OnHealthChanged;
 
         UpdateVisual();
     }

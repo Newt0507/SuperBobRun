@@ -8,7 +8,6 @@ public class Plant : Enemy
 {
     private const string ATTACK = "Attack";
     
-    [SerializeField] private Transform _bullet;
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private float _firedTime;
     [SerializeField] private float _firedForce;
@@ -20,10 +19,6 @@ public class Plant : Enemy
     private float _lastFireTime;
     private bool _isBeingHit;
     
-    //Draw raycast -> hit player -> attack
-    //Look at player
-
-
     private void Start()
     {
         _player = GameObject.FindWithTag("Player").transform;
@@ -66,8 +61,7 @@ public class Plant : Enemy
     {
         if (Time.time >= _lastFireTime + _firedTime)
         {
-            Transform bullet = Instantiate(_bullet, _fireTransform);
-            bullet.GetComponent<Rigidbody2D>()
+            ObjectPoolManager.Instance.Get("Bullet", _fireTransform).GetComponent<Rigidbody2D>()
                 .AddForce(Vector2.right * _previousDirection * _firedForce, ForceMode2D.Impulse);
             UpdateFireTime();
         }

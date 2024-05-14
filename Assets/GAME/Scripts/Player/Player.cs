@@ -8,9 +8,9 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    //public static Player Instance { get; private set; }
+    public static Player Instance { get; private set; }
     
-    public static event EventHandler OnHealthChanged;
+    public event EventHandler OnHealthChanged;
     
     private const string IS_RUNNING = "IsRunning";
     private const string IS_JUMPING = "IsJumping";
@@ -30,36 +30,35 @@ public class Player : MonoBehaviour
     [Space]
     [Header("Attack Properties")]
     [SerializeField] private int _coinValueToFire;
-    [SerializeField] private Transform _bomb;
+    //[SerializeField] private Transform _bomb;
     [SerializeField] private float _firedForce;
-
     
-    private PlayerControls _playerControls;
+    
+    public PlayerControls _playerControls { get; private set; }
     private Rigidbody2D _rigid;
     private Animator _anim;
     private SpriteRenderer _spriteRenderer;
 
+    public float _direction;
+
     private int _health = -1;
-    private float _direction;
     private bool _isGrounded;
     private float _previousDirection = 1f;
     private bool _isJumping;
     private bool _isFalling;
     private bool _isBeingHit;
-    private bool _isAttacking;
+    //private bool _isAttacking;
     
     private void Awake()
     {
-        // if (Instance == null)
-        // {
-        //     Instance = this;
-        //     DontDestroyOnLoad(gameObject);
-        // }
-        // else
-        // {
-        //     Destroy(gameObject);
-        // }
-        
+        if (Instance != null)
+        {
+            DestroyImmediate(gameObject);
+            return;
+        }
+
+        Instance = this;
+
         _playerControls = new PlayerControls();
         _rigid = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
@@ -95,18 +94,18 @@ public class Player : MonoBehaviour
         float jumpDistance = .55f;
         _isGrounded = Physics2D.BoxCast(transform.position, transform.lossyScale / 2, 0, Vector2.down, jumpDistance, _groundLayer);
 
-        float moveDistance = .15f;
-        if (_playerControls.Player.Move.IsPressed())
-        {
-            if (Physics2D.BoxCast(transform.position, transform.lossyScale / 2, 0, new Vector2(_direction, 0), moveDistance, _groundLayer))
-            {
-                _direction = 0;
-            }
-            else
-            {
-                _direction = _previousDirection;
-            }
-        }
+        //float moveDistance = .15f;
+        //if (_playerControls.Player.Move.IsPressed())
+        //{
+        //    if (Physics2D.BoxCast(transform.position, transform.lossyScale / 2, 0, new Vector2(_direction, 0), moveDistance, _groundLayer))
+        //    {
+        //        _direction = 0;
+        //    }
+        //    else
+        //    {
+        //        _direction = _previousDirection;
+        //    }
+        //}
         
             
 
@@ -149,6 +148,7 @@ public class Player : MonoBehaviour
     {
         if (_isGrounded)
         {
+            AudioManager.Instance.PlaySFX(ESound.Jump);
             _rigid.velocity = new Vector2(_rigid.velocity.x, _jumpForce);
             _isJumping = true;
         }
@@ -158,8 +158,10 @@ public class Player : MonoBehaviour
     {
         if (Data.GetCoin() >= _coinValueToFire && _health > 0)
         {
-            Transform spell = Instantiate(_bomb, transform);
-            spell.GetComponent<Rigidbody2D>().AddForce(Vector2.right * _previousDirection * _firedForce, ForceMode2D.Impulse);
+            AudioManager.Instance.PlaySFX(ESound.Bomb);
+            //Transform spell = Instantiate(_bomb, transform);
+            ObjectPoolManager.Instance.Get("Bomb", transform).GetComponent<Rigidbody2D>().AddForce(Vector2.right * _previousDirection * _firedForce, ForceMode2D.Impulse);
+            
 
             Data.SetCoin(-_coinValueToFire);
         }        
@@ -190,7 +192,7 @@ public class Player : MonoBehaviour
 
     private bool CanAttack(Transform target)
     {
-        _isAttacking = true;
+        //_isAttacking = true;
         return DotTest(target, Vector2.down);
     }
 
@@ -201,6 +203,7 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(Transform attackerTransform , int damageAmount)
     {
+        AudioManager.Instance.PlaySFX(ESound.Hit);
         _anim.SetTrigger(IS_BEING_HIT);
         _health -= damageAmount;
         OnHealthChanged?.Invoke(this, EventArgs.Empty);
@@ -211,8 +214,6 @@ public class Player : MonoBehaviour
         {
             GetComponent<Collider2D>().enabled = false;
             _rigid.gravityScale += Time.deltaTime;
-
-            GameManager.Instance._isGameOver = true;
         }
     }
 
@@ -224,7 +225,12 @@ public class Player : MonoBehaviour
     
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (!_isGrounded && other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            _direction = 0;
+            _isBeingHit = false;
+        }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             Enemy enemy = other.gameObject.GetComponent<Enemy>();
             
@@ -234,7 +240,7 @@ public class Player : MonoBehaviour
                 {
                     enemy.BeingHit(transform);
                     Bounce(enemy.transform);
-                    _isAttacking = false;
+                    // _isAttacking = false;
                 }
                 else
                 {
@@ -278,10 +284,10 @@ public class Player : MonoBehaviour
         return _maxHealth;
     }
 
-    public bool GetAttackState()
-    {
-        return _isAttacking;
-    }
+    //public bool GetAttackState()
+    //{
+    //    return _isAttacking;
+    //}
     
     public int GetCostFireValue()
     {
@@ -297,7 +303,7 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
-        //Instance = null;
+        Instance = null;
         _playerControls.Disable();
         Destroy(gameObject);
     }

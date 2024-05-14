@@ -665,7 +665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 956573957024520419b561d45bf5a703, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _timerText: {fileID: 1514393759425731745}
+  _costValueText: {fileID: 1514393759425731745}
 --- !u!1 &8229945282220802283
 GameObject:
   m_ObjectHideFlags: 0

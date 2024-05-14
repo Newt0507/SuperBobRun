@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Coin : Reward
 {
-    private void Start()
+    private void OnEnable()
     {
         int coinValue = 50;
         Data.SetCoin(coinValue);

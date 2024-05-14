@@ -52,7 +52,7 @@ public class Snail : Enemy
     {
         Player player = from.gameObject.GetComponent<Player>();
         
-        if (player!=null && player.GetAttackState())
+        if (player!=null) //&& player.GetAttackState()
         {
             Instantiate(_shell, transform.position, Quaternion.identity);
             Destroy(gameObject);

@@ -11,6 +11,8 @@ public class EndCheckPoint : MonoBehaviour
         {
             //Win
             GameManager.Instance._isVictory = true;
+            Player.Instance._playerControls.Disable();
+            Player.Instance._direction = 0;
         }
     }
 }

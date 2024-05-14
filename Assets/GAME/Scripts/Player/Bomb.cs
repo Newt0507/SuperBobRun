@@ -13,10 +13,13 @@ public class Bomb : MonoBehaviour
             if (enemy != null)
             {
                 enemy.BeingHit(transform);
-                Destroy(gameObject);
+                ObjectPoolManager.Instance.Return(gameObject);
             }
         }
+    }
 
-        Destroy(gameObject, 1f);
+    private void OnBecameInvisible()
+    {
+        ObjectPoolManager.Instance.Return(gameObject);
     }
 }

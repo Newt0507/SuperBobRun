@@ -8,6 +8,20 @@ public static class Data
     private const string MUSIC_VOLUME = "Music_Volume";
     private const string SFX_VOLUME = "SFX_Volume";
     private const string VIBRATION = "Vibration";
+    private const string CHARACTER = "Character";
+
+    #region Character
+    public static int GetCharacter()
+    {
+        return PlayerPrefs.GetInt(CHARACTER);
+    }
+
+    public static void SetCharacter(int value)
+    {
+        PlayerPrefs.SetInt(CHARACTER, value);
+        PlayerPrefs.Save();
+    }
+    #endregion
 
     #region Coin
     public static int GetCoin()

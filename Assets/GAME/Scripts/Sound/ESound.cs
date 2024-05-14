@@ -7,7 +7,9 @@ public enum ESound
     Win,
     GameOver,
     Jump,
-    Score,
+    Coin,
     Health,
     Click,
+    Hit,
+    Bomb,
 }

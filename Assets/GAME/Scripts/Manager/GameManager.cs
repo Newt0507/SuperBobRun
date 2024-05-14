@@ -8,7 +8,6 @@ using UnityEngine.Serialization;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-
     
     [HideInInspector] public bool _isVictory = false;
     [HideInInspector] public bool _isGameOver = false;
@@ -20,20 +19,20 @@ public class GameManager : MonoBehaviour
     
     private float _playingTimer;
     private int _coin;
-    
+    private bool _stopCountdown = false;
+
     private void Awake()
     {
         if (Instance != null)
         {
-            Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
+            DestroyImmediate(gameObject);
+            return;
         }
 
+        Instance = this;
         _coin = Data.GetCoin();
 
+        AudioManager.Instance.PlayMusic(ESound.Playing);
     }
 
     private void Start()
@@ -43,21 +42,29 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        _playingTimer -= Time.deltaTime;
-        if (_playingTimer <= 0)
+        if (!_stopCountdown)
         {
-            _isGameOver = true;
-            _playingTimer = 0f;
+            _playingTimer -= Time.deltaTime;
+            if (_playingTimer <= 0)
+            {
+                _isGameOver = true;
+                _playingTimer = 0f;
+                _stopCountdown = true;
+            }
         }
-                    
+
         if (_isVictory)
         {
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlaySFX(ESound.NextStage);
             Invoke(nameof(Victory), 1f);
             _isVictory = false;
         }
 
         if (_isGameOver)
         {
+            AudioManager.Instance.StopMusic();
+            AudioManager.Instance.PlaySFX(ESound.GameOver);
             Invoke(nameof(GameOver), 2f);
             _isGameOver = false;
         }
