@@ -11,8 +11,10 @@ public class Bullet : MonoBehaviour
             Player player = other.gameObject.GetComponent<Player>();
             player.TakeDamage(transform, damageAmount: 1);
 
-            ObjectPoolManager.Instance.Return(gameObject);
+            //ObjectPoolManager.Instance.Return(gameObject);
         }
+
+        ObjectPoolManager.Instance.Return(gameObject);
     }
 
     private void OnBecameInvisible()
